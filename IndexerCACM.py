@@ -10,6 +10,7 @@ from Indexer import *
 from porter import *
 from copy import *
 from nltk.corpus import stopwords
+from TextRepresenter import PorterStemmer
 
 class IndexerCACM(Indexer):
     
@@ -19,26 +20,33 @@ class IndexerCACM(Indexer):
         
     def elementsFromDoc(self, doc):
         
+        '''
         elements = {}
         text = doc.getText()
-        
+        stemmer.getTextRepresentation(text)
+        stop_words = set(stopwords.words('english'))
+
         # preprocessing
         text = text.lower()
-        exclude = set(string.punctuation)
-        exclude.remove("-")
-        text = ''.join(word for word in text if word not in exclude)
-        # removes digit and \n
-        text = re.sub(r'\d+|\n', '', text)
-        # removes one letter words
-        text = re.sub(r'(^| )(\w( |$))+', ' ', text)
+        text = re.sub(r'(!|#|"|%|\$|\'|&|\)|\(|\+|\*|(^| )(-( |$))+|,|/|\.|;|:|=|<|\?|>|@|[|]|\|_|^|`|{|}|\||~)', ' ', text)
+        text = re.sub(r'\n', ' ', text)
+        text = re.sub(r'\d+', '', text)
+        text = re.sub(r'(^| )(\w($| ))+', ' ', text)
+        text = re.sub(r' +', ' ', text)
         text = text.split()
-        
+
         for word in text:
-            word = stem(word)
-            if word in elements:
-                elements[word] += 1
-            else:
-                elements[word] = 1
+            if word not in stop_words:
+                word = stem(word)
+                if word in elements:
+                    elements[word] += 1
+                else:
+                    elements[word] = 1
         
         return elements
         
+        '''
+
+        text = doc.getText()
+        stemmer = PorterStemmer()
+        return stemmer.getTextRepresentation(text)

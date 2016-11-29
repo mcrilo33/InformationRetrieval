@@ -1,16 +1,3 @@
-import os
-import re
-import pickle
-import string
-import operator
-import linecache as lin
-import numpy as np
-from ParserCACM import *
-from Indexer import *
-from porter import *
-from copy import *
-from nltk.corpus import stopwords
-
 class Query(object):
 
     def __init__(self, id, text="", el=None, relevants=None):
@@ -23,8 +10,15 @@ class Query(object):
 def query(id, queriesIndexer, relevantIndexer):
     
     id = str(id)
-    text = queriesIndexer.getObjFromDoc(id).getText()
-    el = queriesIndexer.getEfFromDoc(id)
-    relevants = relevantIndexer.getObjFromDoc(id).get('tab')
+    text = None
+    el = None
+    relevants = None
+
+    if id in queriesIndexer.indexFromCol:
+        text = queriesIndexer.getObjFromDoc(id).getText()
+    if id in queriesIndexer.index:
+        el = queriesIndexer.getEfFromDoc(id)
+    if id in relevantIndexer.indexFromCol:
+        relevants = relevantIndexer.getObjFromDoc(id).get('tab')
     
     return Query(id, text, el, relevants)

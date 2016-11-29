@@ -36,7 +36,6 @@ class ParserCACM(Parser):
         modeK=False;
         modeW=False;
         modeX=False;
-        modeN=False;
         info=""
         identifier=""
         author=""
@@ -44,7 +43,6 @@ class ParserCACM(Parser):
         links=""
         title=""
         texte=""
-        answer = ""
         
         st=text.split("\n");
         s=""
@@ -68,11 +66,6 @@ class ParserCACM(Parser):
                     kw=info;
                     info="";
                     modeK=False;
-                    
-                if(modeN):
-                    answer=info;
-                    info="";
-                    modeN=False;
                 
                 if(modeT):
                     title=info;
@@ -88,12 +81,6 @@ class ParserCACM(Parser):
             
             if(s.startswith(".W")):
                 modeW=True;
-                info=s[2:];
-                continue;
-            
-            
-            if(s.startswith(".N")):
-                modeN=True;
                 info=s[2:];
                 continue;
             
@@ -124,7 +111,7 @@ class ParserCACM(Parser):
                 
                 continue;
             
-            if((modeK) or (modeW) or (modeA) or (modeT) or (modeN)):
+            if((modeK) or (modeW) or (modeA) or (modeT)):
                 #print "add "+s
                 info+=" "+s
             
@@ -145,11 +132,6 @@ class ParserCACM(Parser):
             info="";
             modeK=False;
         
-        if(modeN):
-            answer=info;
-            info="";
-            modeN=False;
-        
         if(modeX):
             other["links"]=links;
             info=""
@@ -164,9 +146,8 @@ class ParserCACM(Parser):
         other["text"]=texte
         other["author"]=author
         other["keywords"]=kw
-        other["answer"]=answer
         
-        doc=Document(identifier,title+" \n "+author+" \n "+answer+" \n "+kw+" \n "+texte,other);
+        doc=Document(identifier,title+" \n "+author+" \n "+kw+" \n "+texte,other);
         
         return doc
 

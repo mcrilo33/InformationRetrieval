@@ -8,7 +8,7 @@ Created on 5 sept. 2016
 
 import re
 from collections import Counter
-from RI.indexation import porter
+import porter
 
 
 class TextRepresenter(object):
