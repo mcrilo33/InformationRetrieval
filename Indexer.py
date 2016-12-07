@@ -21,7 +21,9 @@ class Indexer(object):
         repIndexPath="",
         repInvPath="",
         repInvIndexPath="",
-        repInvFromAllPath=""
+        repInvFromAllPath="",
+        linkPath="",
+        linkIndexPath=""
     ):
         
         # parser is a Parser object
@@ -61,6 +63,14 @@ class Indexer(object):
             self.repInvPath = re.sub(r'\..*$', 'Inv'+end, self.repPath)
         else:
             self.repInvPath
+        if linkPath=="":
+            self.linkPath = re.sub(r'\..*$', 'Link'+end, self.collectionPath)
+        else:
+            self.linkPath
+        if linkIndexPath=="":
+            self.linkIndexPath = re.sub(r'\..*$', 'LinkIndex'+end, self.collectionPath)
+        else:
+            self.linkIndexPath
         
         # Loads Hashtables if they exist
         if os.path.isfile(self.repIndexPath):
@@ -87,6 +97,12 @@ class Indexer(object):
             repInvFromAllFile.close()
         else:
             self.repInvFromAll = {}
+        if os.path.isfile(self.linkIndexPath):
+            linkIndexFile = open(self.linkIndexPath)
+            self.linkIndex = pickle.load(linkIndexFile)
+            linkIndexFile.close()
+        else:
+            self.linkIndex = {}
             
         self.elements = {} # elements in self for optimisation reasons
         
@@ -162,6 +178,11 @@ class Indexer(object):
         data = self.getData(self.repInvPath, self.invIndex, str(element))
         return self.freqFromData(data)
         
+    def getLinkFromDoc(self, id):
+        '''Return the links of a document'''
+        
+        return np.unique(self.getData(self.linkPath, self.linkIndex, str(id)).split(";"))
+
     def getStrFromDoc(self, id):
         '''Return the string of a doc with identifier==id in Col'''
         
@@ -321,3 +342,31 @@ class Indexer(object):
 
         repInvFromAllFile.close()
                        
+    def createLinkIndex(self):
+        
+        if self.index == {}:
+            raise ValueError('Rep index undefined')
+            
+        if self.indexFromCol == {}:
+            raise ValueError('Rep invIndex undefined')
+        
+        self.linkIndex = {}
+        
+        linkFile = open(self.linkPath, "w")
+        pos = linkFile.tell()
+        
+        for id in self.index:
+            
+            doc = self.getObjFromDoc(id)
+            links = doc.get('links')[:-1]
+            linkFile.write(links)
+            pos2 = linkFile.tell()
+            self.linkIndex[id] = [pos, pos2-pos]
+            pos = pos2
+            
+        linkFile.close()
+        
+        linkIndexFile = open(self.linkIndexPath, "w")
+        pickle.dump(self.linkIndex, linkIndexFile)
+        linkIndexFile.close()
+ 

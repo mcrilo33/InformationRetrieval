@@ -29,19 +29,20 @@ class Vector(IRmodel):
         
         return result
                 
-    def norm1(self, vector):
+    def norm2(self, vector):
         
         result = 0
         
         for element in vector:
-            result += abs(vector[element])
+            result += float(np.power(vector[element], 2))
         
-        return result
+        return float(np.sqrt(result))
     
     def getScores(self, query):
         
         vecQuery = self.weighter.getWeightsFromQuery(query)
-        norm1VecQuery = self.norm1(vecQuery)
+        vecQuery.pop(-1)
+        norm2VecQuery = self.norm2(vecQuery)
         
         doc = {}
         
@@ -49,23 +50,29 @@ class Vector(IRmodel):
             
             if id in self.indexer.invIndex:
                 for element in self.indexer.getDfFromEl(id):
-                    doc[element] = 1
+                    doc[element] = id
         doc.pop(-1)
         
-        scores = np.zeros(len(doc), [('id', 'a25'), ('score', 'float64')])
-        i = 0
+        scores = np.zeros(self.nDoc, [('id', 'a25'), ('score', 'float64')])
         
-        for id in doc:
+        i = 0 
+        for id in self.indexer.index:
             
             scores[i]['id'] = str(id)
-            vecDoc = self.weighter.getWeightsFromDoc(id)
-            dotProduct = self.dotProduct(vecDoc, vecQuery)
             
-            if self.normalized: 
-                scores[i]['score'] = dotProduct/float(self.norm1(vecDoc)*norm1VecQuery)
+            if id in doc:
+                vecDoc = self.weighter.getWeightsFromDoc(id)
+                vecDoc.pop(-1)
+                dotProduct = self.dotProduct(vecDoc, vecQuery)
+
+                if self.normalized: 
+                    scores[i]['score'] = dotProduct/(self.norm2(vecDoc)*norm2VecQuery)
+                else:
+                    scores[i]['score'] = dotProduct
+
             else:
-                scores[i]['score'] = dotProduct
-            
+                scores[i]['score'] = 0
+                
             i += 1
         
         return np.array(scores)

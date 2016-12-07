@@ -112,7 +112,6 @@ class ParserCACM(Parser):
                 continue;
             
             if((modeK) or (modeW) or (modeA) or (modeT)):
-                #print "add "+s
                 info+=" "+s
             
         

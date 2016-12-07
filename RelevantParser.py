@@ -28,15 +28,14 @@ class RelevantParser(Parser):
         id = self.curId
         text = ''
         
-        while(self.curLine!=''):
+        while(id==self.curId and self.curLine!=''):
             text += self.curLine
             pos = self.file.tell()
             self.curLine = self.file.readline()
             if self.curLine!='':
                 self.curId = ((self.curLine).split())[0]
-            if(id!=self.curId):
-                self.file.seek(pos)
-                break
+        if(id!=self.curId):
+            self.file.seek(pos)
 
         if text=='':
             return None
@@ -47,7 +46,7 @@ class RelevantParser(Parser):
         
         tab = \
         [
-            [(i.split())[1], int((i.split())[2]), int((i.split())[3])] \
+            [str(int((i.split())[1])), int((i.split())[2]), int((i.split())[3])] \
             for i in text.split('\n')[:-1] \
         ]
         

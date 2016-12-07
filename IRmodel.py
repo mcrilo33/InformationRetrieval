@@ -21,7 +21,5 @@ class IRmodel(object):
         sorted_scores = (np.sort(scores, order='score'))[::-1]
         
         end = time.time()
-        print(end - start)
         
         return sorted_scores
-

@@ -15,16 +15,13 @@ from TextRepresenter import PorterStemmer
 class IndexerCACM(Indexer):
     
     def __init__(self, collectionPath, parser):
-        
+
         Indexer.__init__(self, collectionPath, parser)
         
     def elementsFromDoc(self, doc):
         
-        '''
         elements = {}
         text = doc.getText()
-        stemmer.getTextRepresentation(text)
-        stop_words = set(stopwords.words('english'))
 
         # preprocessing
         text = text.lower()
@@ -33,20 +30,8 @@ class IndexerCACM(Indexer):
         text = re.sub(r'\d+', '', text)
         text = re.sub(r'(^| )(\w($| ))+', ' ', text)
         text = re.sub(r' +', ' ', text)
-        text = text.split()
-
-        for word in text:
-            if word not in stop_words:
-                word = stem(word)
-                if word in elements:
-                    elements[word] += 1
-                else:
-                    elements[word] = 1
         
-        return elements
-        
-        '''
-
-        text = doc.getText()
         stemmer = PorterStemmer()
+
         return stemmer.getTextRepresentation(text)
+ 

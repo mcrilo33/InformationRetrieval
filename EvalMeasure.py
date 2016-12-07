@@ -68,7 +68,7 @@ class EvalPrecisionAverage(EvalMeasure):
     def eval(self):
         
         self.irlist.query.relevants = np.array(self.irlist.query.relevants)
-        return np.mean([self.precision(i) for i in np.argwhere(np.in1d(self.irlist.scores['id'], self.irlist.query.relevants[:,0]))])
+        return np.mean([self.precision(i+1) for i in np.argwhere(np.in1d(self.irlist.scores['id'], self.irlist.query.relevants[:,0]))])
             
             
         
